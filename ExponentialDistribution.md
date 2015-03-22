@@ -1,0 +1,85 @@
+exponential distribution
+========================================================
+
+In this report we will investigate the exponential distribution in R and compare it with the Central Limit Theorem. 
+The exponential distribution can be simulated in R with rexp(n, lambda) where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda. Set lambda = 0.2 for all of the simulations. we will investigate the distribution of averages of 40 exponentials. Note that we will need to do a thousand simulations.
+
+
+** Run Simulation **
+
+
+```r
+nsim = 1:1000
+n = 40
+lambda = 0.2
+
+mns = NULL
+for (i in nsim) mns = c(mns, mean(rexp(n,lambda)))
+hist(mns,xlab="mean",main="Mean Distribution")
+```
+
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
+
+Center is around 5.
+
+
+```r
+# Mean of means
+meanofmean = mean(mns)
+
+# Expected Mean
+expectedmean = 1/lambda
+
+# Standard Deviation
+standard = sd(mns)
+
+# Expected sd
+expectedstandard = (1/lambda) / sqrt(n)
+
+# Varaince
+variance = var(mns)
+
+# Expected variance
+expectedvariance = ((1/lambda) / sqrt(n))^2
+```
+
+
+the Mean of means is 4.99 compared to an expected mean (1/Lambda => 1/0.2) of 5 which is almost the same.
+
+The Standard deviation of the simulation is 0.79 and the expected standard deviation (theoratical) of the distribution is also 0.79
+
+Variance of the simluation is 0.62 same as the expected variance of the distribution.
+
+The below chart shows that the distrbution is approximately normal with the Mean and Theoratical Means displayed as Long Dash (in Green and Yellow)
+
+
+```r
+library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.0.3
+```
+
+```r
+plotdata <- data.frame(mns);
+plot1 <- ggplot(plotdata, aes(x =mns))
+plot1 <- plot1 +geom_histogram(aes(y=..density..), colour="black",
+                               fill = "blue")
+plot1<-plot1+labs(title="Density of 40 Numbers from Exp. Distribution", x="Mean of 40 Selections", y="Density")
+plot1<-plot1 +geom_vline(xintercept=expectedmean,size=1.0, color="green",linetype ="longdash")
+plot1<-plot1 +geom_vline(xintercept=meanofmean,size=1.0, color="yellow",linetype = "longdash")
+plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=expectedmean, sd=sqrt(expectedvariance)),color = "green", size = 1.0)
+plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=meanofmean, sd=sqrt(variance)),color = "yellow", size = 1.0)
+print(plot1)
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+
+
+
+
